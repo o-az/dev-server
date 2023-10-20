@@ -1,0 +1,10 @@
+node_modules
+*debug.log
+
+.vercel
+.DS_Store
+.eslintcache
+tmp
+
+# IDE
+.idea
