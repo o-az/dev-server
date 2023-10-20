@@ -6,15 +6,12 @@ main().catch((error) => {
 });
 
 async function main() {
-const runtime = new Runtime({ directoryWatch: "./example" });
+  const runtime = new Runtime({ directoryWatch: "./example" });
 
-await runtime.start(async (module) => {
-  const { default: ModuleClass } = await module;
-  const mod = new ModuleClass();
-  console.log(`\nCalling getParams from vite-node.ts:`, mod.getParams());
-  console.log(
-    `\nCalling getTimestamp from vite-node.ts:`,
-    mod.getTimestamp()
-  );
-});
+  await runtime.start(async (module) => {
+    const { default: MyClass } = await module;
+    const mod = new MyClass();
+    console.log(`\nCalling getParams method:`, mod.getParams());
+    console.log(`\nCalling getTimestamp method:`, mod.getTimestamp());
+  });
 }

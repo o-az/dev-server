@@ -1,2 +1,4 @@
-export * from "./foo.js";
-export * from "./bar.js";
+import Foo from "./foo.js";
+import Bar from "./bar.js";
+
+export { Foo, Bar };

@@ -4,16 +4,17 @@ import childProcess from "node:child_process";
 
 Object.assign(process.env, { NODE_OPTIONS: "--no-warnings" });
 
-const entryPoint = process.argv.at(-1) ?? "./src/index.ts";
+const entryPoints = process.argv.toString().includes("-- ")
+  ? process.argv[process.argv.indexOf("-- ") + 1]
+  : "./example/index.ts";
 
 const buildOptions = {
   bundle: true,
-  format: "cjs",
+  format: "esm",
   platform: "node",
   treeShaking: true,
   target: ["esnext"],
-  external: ["vite-node", "lightningcss", "fsevents"],
-  entryPoints: [entryPoint],
+  entryPoints: [entryPoints],
   outfile: "./dist/index.js",
 } satisfies esbuild.BuildOptions;
 

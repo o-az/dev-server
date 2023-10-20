@@ -1,3 +1,14 @@
+import url from "node:url";
+import type { ViteNodeServer } from "vite-node/server";
+import type { ViteNodeRunner } from "vite-node/client";
+import type { InlineConfig, ViteDevServer } from "vite";
+
+const __filename = url.fileURLToPath(import.meta.url);
+
+/**
+ * @description vite-node runtime
+ * @link https://github.com/vitest-dev/vitest/blob/main/packages/vite-node/README.md
+ */
 export class Runtime {
   #directoryWatch: string;
   constructor({ directoryWatch }: { directoryWatch: string }) {
@@ -5,7 +16,7 @@ export class Runtime {
   }
 
   async #createViteServer(
-    viteServerConfig: import("vite").InlineConfig = {
+    viteServerConfig: InlineConfig = {
       clearScreen: false,
       optimizeDeps: { disabled: true },
     }
@@ -16,7 +27,7 @@ export class Runtime {
     return server;
   }
 
-  async #createViteNodeServer(viteServer: import("vite").ViteDevServer) {
+  async #createViteNodeServer(viteServer: ViteDevServer) {
     const { ViteNodeServer } = await import("vite-node/server");
     const { installSourcemapsSupport } = await import("vite-node/source-map");
     const viteNodeServer = new ViteNodeServer(viteServer);
@@ -27,8 +38,8 @@ export class Runtime {
   }
 
   async #createViteNodeRunner(
-    viteServer: import("vite").ViteDevServer,
-    viteNodeServer: import("vite-node/server").ViteNodeServer
+    viteServer: ViteDevServer,
+    viteNodeServer: ViteNodeServer
   ) {
     const { ViteNodeRunner } = await import("vite-node/client");
     return new ViteNodeRunner({
@@ -39,10 +50,7 @@ export class Runtime {
     });
   }
 
-  async #executeFile(
-    filePath: string,
-    runner: import("vite-node/client").ViteNodeRunner
-  ) {
+  async #executeFile(filePath: string, runner: ViteNodeRunner) {
     try {
       await runner.executeFile(filePath);
     } catch (error) {
@@ -58,7 +66,10 @@ export class Runtime {
   public async start(handleModule: (module: any) => void) {
     const viteServer = await this.#createViteServer();
     const viteNodeServer = await this.#createViteNodeServer(viteServer);
-    let viteNodeRunner = await this.#createViteNodeRunner(viteServer, viteNodeServer);
+    let viteNodeRunner = await this.#createViteNodeRunner(
+      viteServer,
+      viteNodeServer
+    );
 
     console.info("Listening for changes…\n");
 
@@ -68,7 +79,10 @@ export class Runtime {
       if (path === __filename || eventName !== "change") return;
       const module = await viteNodeRunner.cachedRequest(path, path, []);
       handleModule(module);
-      viteNodeRunner = await this.#createViteNodeRunner(viteServer, viteNodeServer);
+      viteNodeRunner = await this.#createViteNodeRunner(
+        viteServer,
+        viteNodeServer
+      );
     });
   }
 }

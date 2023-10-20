@@ -4,10 +4,12 @@
     "target": "ESNext",
     "moduleResolution": "Bundler",
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "noEmit": true,
     "allowJs": true,
     "checkJs": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
   },
   "exclude": ["node_modules", "dist"]
 }
