@@ -1,9 +1,9 @@
 {
   "type": "module",
   "scripts": {
+    "dev": "node --loader=tsx --no-warnings runner.ts",
     "build": "node --loader=tsx --no-warnings esbuild.config.ts",
-    "build:watch": "node --loader=tsx --no-warnings esbuild.config.ts --watch",
-    "runner": "node --loader=tsx --no-warnings runner.ts"
+    "build:watch": "node --loader=tsx --no-warnings esbuild.config.ts --watch"
   },
   "dependencies": {
     "esbuild": "^0.19.5",
