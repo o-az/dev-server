@@ -10,6 +10,9 @@
     "checkJs": true,
     "esModuleInterop": true,
     "baseUrl": ".",
+    "paths": {
+      "@example/*": ["./example/*"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

@@ -15,5 +15,7 @@ pnpm build:watch -- ./example/index.ts
 #### To programmatically execute code. See example in `./runner.ts`. To run the example
 
 ```sh
-node --loader=tsx runner.ts
+node --import=tsx runner.ts
+# or
+pnpm tsx runner.ts
 ```

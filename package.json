@@ -1,13 +1,14 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "node --loader=tsx --no-warnings runner.ts",
-    "build": "node --loader=tsx --no-warnings esbuild.config.ts",
-    "build:watch": "node --loader=tsx --no-warnings esbuild.config.ts --watch"
+    "dev": "node --import=tsx --no-warnings runner.ts",
+    "build": "node --import=tsx --no-warnings esbuild.config.ts",
+    "build:watch": "node --import=tsx --no-warnings esbuild.config.ts --watch"
   },
   "dependencies": {
     "esbuild": "^0.19.5",
-    "tsx": "^3.13.0",
+    "glob": "^10.3.10",
+    "tsx": "^3.14.0",
     "vite": "^4.4.11",
     "vite-node": "^0.34.6"
   },

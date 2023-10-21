@@ -10,15 +10,26 @@ const __filename = url.fileURLToPath(import.meta.url);
  * @link https://github.com/vitest-dev/vitest/blob/main/packages/vite-node/README.md
  */
 export class Runtime {
-  #directoryWatch: string;
-  constructor({ directoryWatch }: { directoryWatch: string }) {
-    this.#directoryWatch = directoryWatch;
+  #files: Array<string>;
+  #viteServerConfig: InlineConfig;
+
+  constructor({
+    files,
+    viteServerConfig,
+  }: {
+    files: Array<string>;
+    viteServerConfig?: InlineConfig;
+  }) {
+    this.#files = files;
+    this.#viteServerConfig = viteServerConfig;
   }
 
+  /* Here you would set vite's `InlineConfig`, e.g., `root`, `resolve.alias`, etc. */
   async #createViteServer(
     viteServerConfig: InlineConfig = {
       clearScreen: false,
       optimizeDeps: { disabled: true },
+      ...this.#viteServerConfig,
     }
   ) {
     const { createServer } = await import("vite");
@@ -63,7 +74,9 @@ export class Runtime {
     }
   }
 
-  public async start(handleModule: (module: any) => void) {
+  public async start<T extends any>(
+    handleModule: (module: Promise<T>, filePath: string) => void
+  ) {
     const viteServer = await this.#createViteServer();
     const viteNodeServer = await this.#createViteNodeServer(viteServer);
     let viteNodeRunner = await this.#createViteNodeRunner(
@@ -73,12 +86,19 @@ export class Runtime {
 
     console.info("Listening for changes…\n");
 
-    this.#executeFile(this.#directoryWatch, viteNodeRunner);
+    this.#files.forEach((filePath) =>
+      this.#executeFile(filePath, viteNodeRunner)
+    );
 
-    viteServer.watcher.on("all", async (eventName, path, _stats) => {
-      if (path === __filename || eventName !== "change") return;
-      const module = await viteNodeRunner.cachedRequest(path, path, []);
-      handleModule(module);
+    viteServer.watcher.on("all", async (eventName, affectedPath, _stats) => {
+      console.log(`detected ${eventName} in ${affectedPath}`);
+      if (affectedPath === __filename || eventName !== "change") return;
+      const module = await viteNodeRunner.cachedRequest(
+        affectedPath,
+        affectedPath,
+        []
+      );
+      handleModule(module, affectedPath);
       viteNodeRunner = await this.#createViteNodeRunner(
         viteServer,
         viteNodeServer
